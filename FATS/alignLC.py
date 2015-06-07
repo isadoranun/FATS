@@ -29,6 +29,8 @@ def Align_LC(mjd, mjd2, data, data2, error, error2):
                 count = count + 1
 
         new_data2 = np.asarray(new_data2).flatten()
+        new_error2 = np.asarray(new_error2).flatten()
+
 
     else:
 
