@@ -1354,3 +1354,19 @@ class Freq3_harmonics_rel_phase_3(Base):
             return scaledPH[2][3]
         except:
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+
+class Gskew(Base):
+    """Median-based measure of the skew"""
+
+    def __init__(self):
+        self.Data = ['magnitude']
+
+    def fit(self, data):
+        magnitude = np.array(data[0])
+        median_mag = np.median(magnitude)
+        F_3_value = np.percentile(magnitude, 3)
+        F_97_value = np.percentile(magnitude, 97)
+        
+        return (np.median(magnitude[magnitude <= F_3_value]) 
+                + np.median(magnitude[magnitude >= F_97_value]) 
+                - 2*median_mag)
