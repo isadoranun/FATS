@@ -10,6 +10,7 @@ from scipy import stats
 from scipy.optimize import minimize
 from scipy.optimize import curve_fit
 from statsmodels.tsa import stattools
+from scipy.interpolate import interp1d
 
 from Base import Base
 import lomb
@@ -1355,6 +1356,7 @@ class Freq3_harmonics_rel_phase_3(Base):
         except:
             print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
 
+
 class Gskew(Base):
     """Median-based measure of the skew"""
 
@@ -1366,7 +1368,69 @@ class Gskew(Base):
         median_mag = np.median(magnitude)
         F_3_value = np.percentile(magnitude, 3)
         F_97_value = np.percentile(magnitude, 97)
-        
-        return (np.median(magnitude[magnitude <= F_3_value]) 
-                + np.median(magnitude[magnitude >= F_97_value]) 
+
+        return (np.median(magnitude[magnitude <= F_3_value]) +
+                np.median(magnitude[magnitude >= F_97_value])
                 - 2*median_mag)
+
+
+class StructureFunction_index_21(Base):
+
+    def __init__(self):
+        self.Data = ['magnitude', 'time']
+
+    def fit(self, data):
+        magnitude = data[0]
+        time = data[1]
+
+        global m_21
+        global m_31
+        global m_32
+
+        Nsf = 100
+        Np = 100
+        sf1 = np.zeros(Nsf)
+        sf2 = np.zeros(Nsf)
+        sf3 = np.zeros(Nsf)
+        f = interp1d(time, magnitude)
+
+        time_int = np.linspace(np.min(time), np.max(time), Np)
+        mag_int = f(time_int)
+
+        for tau in np.arange(1, Nsf):
+            sf1[tau-1] = np.mean(np.power(np.abs(mag_int[0:Np-tau] - mag_int[tau:Np]) , 1.0))
+            sf2[tau-1] = np.mean(np.abs(np.power(np.abs(mag_int[0:Np-tau] - mag_int[tau:Np]) , 2.0)))
+            sf3[tau-1] = np.mean(np.abs(np.power(np.abs(mag_int[0:Np-tau] - mag_int[tau:Np]) , 3.0)))
+        sf1_log = np.log10(np.trim_zeros(sf1))
+        sf2_log = np.log10(np.trim_zeros(sf2))
+        sf3_log = np.log10(np.trim_zeros(sf3))
+
+        m_21, b_21 = np.polyfit(sf1_log, sf2_log, 1)
+        m_31, b_31 = np.polyfit(sf1_log, sf3_log, 1)
+        m_32, b_32 = np.polyfit(sf2_log, sf3_log, 1)
+
+        return m_21
+
+
+class StructureFunction_index_31(Base):
+    def __init__(self):
+
+        self.Data = ['magnitude', 'time']
+
+    def fit(self, data):
+        try:
+            return m_31
+        except:
+            print "error: please run StructureFunction_index_21 first to generate values for all Structure Function"
+
+
+class StructureFunction_index_32(Base):
+    def __init__(self):
+
+        self.Data = ['magnitude', 'time']
+
+    def fit(self, data):
+        try:
+            return m_32
+        except:
+            print "error: please run StructureFunction_index_21 first to generate values for all Structure Function"

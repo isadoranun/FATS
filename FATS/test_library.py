@@ -47,6 +47,21 @@ def uniform_lc():
 	lc = np.array([data_uniform, mjd_uniform])
 	return lc
 
+@pytest.fixture
+def random_walk():
+	N = 10000
+	alpha = 1.
+	sigma = 0.5
+	data_rw = np.zeros([N,1])
+	data_rw[0] = 1
+	time_rw = xrange(1, N)
+	for t in time_rw:
+		data_rw[t] = alpha * data_rw[t-1] + np.random.normal(loc=0.0, scale=sigma)
+	time_rw = np.array(range(0,N)) + 1 * np.random.uniform(size=N)
+	data_rw = data_rw.squeeze()
+	lc = np.array([data_rw, time_rw])
+	return lc
+
 # def test_Amplitude(white_noise):
 # 	# data, mjd, error, second_data, aligned_data, aligned_second_data, aligned_mjd = white_noise()
 
@@ -283,5 +298,12 @@ def test_Gskew(white_noise):
 	a=a.calculateFeature(white_noise)
 	assert(a.result(method='array') >= -0.2 and a.result(method='array') <= 0.2)
 
+def test_StructureFunction(random_walk):
+	# data, mjd, error, second_data, aligned_data, aligned_second_data, aligned_mjd = white_noise()
 
-
+	a = FeatureSpace(featureList=['StructureFunction_index_21', 'StructureFunction_index_31',
+                                    'StructureFunction_index_32'])
+	a = a.calculateFeature(random_walk)
+	assert(a.result(method='array')[0] >= 1.520 and a.result(method='array')[0] <= 2.067)
+	assert(a.result(method='array')[1] >= 1.821 and a.result(method='array')[1] <= 3.162)
+	assert(a.result(method='array')[2] >= 1.243 and a.result(method='array')[2] <= 1.562)
