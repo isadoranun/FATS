@@ -58,15 +58,17 @@ class FeatureSpace:
                     if excludeList == None:
                         for name, obj in inspect.getmembers(featureFunction):
                             if inspect.isclass(obj) and name != 'Base':
-                                # if set(obj().Data).issubset(self.Data):
-                                self.featureOrder.append((inspect.getsourcelines(obj)[-1:])[0])
-                                self.featureList.append(name)
+                                if obj.__module__.endswith('FeatureFunctionLib'):
+                                    # if set(obj().Data).issubset(self.Data):
+                                    self.featureOrder.append((inspect.getsourcelines(obj)[-1:])[0])
+                                    self.featureList.append(name)
                     else:
                         for name, obj in inspect.getmembers(featureFunction):
                             if inspect.isclass(obj) and name != 'Base' and not name in excludeList:
-                                # if set(obj().Data).issubset(self.Data):
-                                self.featureOrder.append((inspect.getsourcelines(obj)[-1:])[0])
-                                self.featureList.append(name)
+                                if obj.__module__.endswith('FeatureFunctionLib'):
+                                    # if set(obj().Data).issubset(self.Data):
+                                    self.featureOrder.append((inspect.getsourcelines(obj)[-1:])[0])
+                                    self.featureList.append(name)
 
                 else:
                     for feature in featureList:
@@ -80,17 +82,18 @@ class FeatureSpace:
                 if featureList is None:
                     for name, obj in inspect.getmembers(featureFunction):
                         if inspect.isclass(obj) and name != 'Base' and not name in excludeList:
-                            if name in kwargs.keys():
-                                if set(obj(kwargs[name]).Data).issubset(self.Data):
-                                    self.featureOrder.append((inspect.getsourcelines(obj)[-1:])[0])
-                                    self.featureList.append(name)
+                            if obj.__module__.endswith('FeatureFunctionLib'):
+                                if name in kwargs.keys():
+                                    if set(obj(kwargs[name]).Data).issubset(self.Data):
+                                        self.featureOrder.append((inspect.getsourcelines(obj)[-1:])[0])
+                                        self.featureList.append(name)
 
-                            else:
-                                if set(obj().Data).issubset(self.Data):
-                                    self.featureOrder.append((inspect.getsourcelines(obj)[-1:])[0])
-                                    self.featureList.append(name)
                                 else:
-                                    print "Warning: the feature", name, "could not be calculated because", obj().Data, "are needed."
+                                    if set(obj().Data).issubset(self.Data):
+                                        self.featureOrder.append((inspect.getsourcelines(obj)[-1:])[0])
+                                        self.featureList.append(name)
+                                    else:
+                                        print "Warning: the feature", name, "could not be calculated because", obj().Data, "are needed."
                 else:
 
                     for feature in featureList:
