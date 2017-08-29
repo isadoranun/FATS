@@ -27,8 +27,8 @@ class Amplitude(Base):
         N = len(magnitude)
         sorted_mag = np.sort(magnitude)
 
-        return (np.median(sorted_mag[-math.ceil(0.05 * N):]) -
-                np.median(sorted_mag[0:math.ceil(0.05 * N)])) / 2.0
+        return (np.median(sorted_mag[-int(math.ceil(0.05 * N)):]) -
+                np.median(sorted_mag[0:int(math.ceil(0.05 * N))])) / 2.0
         # return sorted_mag[10]
 
 
@@ -534,10 +534,10 @@ class FluxPercentileRatioMid20(Base):
         sorted_data = np.sort(magnitude)
         lc_length = len(sorted_data)
 
-        F_60_index = math.ceil(0.60 * lc_length)
-        F_40_index = math.ceil(0.40 * lc_length)
-        F_5_index = math.ceil(0.05 * lc_length)
-        F_95_index = math.ceil(0.95 * lc_length)
+        F_60_index = int(math.ceil(0.60 * lc_length))
+        F_40_index = int(math.ceil(0.40 * lc_length))
+        F_5_index = int(math.ceil(0.05 * lc_length))
+        F_95_index = int(math.ceil(0.95 * lc_length))
 
         F_40_60 = sorted_data[F_60_index] - sorted_data[F_40_index]
         F_5_95 = sorted_data[F_95_index] - sorted_data[F_5_index]
@@ -556,10 +556,10 @@ class FluxPercentileRatioMid35(Base):
         sorted_data = np.sort(magnitude)
         lc_length = len(sorted_data)
 
-        F_325_index = math.ceil(0.325 * lc_length)
-        F_675_index = math.ceil(0.675 * lc_length)
-        F_5_index = math.ceil(0.05 * lc_length)
-        F_95_index = math.ceil(0.95 * lc_length)
+        F_325_index = int(math.ceil(0.325 * lc_length))
+        F_675_index = int(math.ceil(0.675 * lc_length))
+        F_5_index = int(math.ceil(0.05 * lc_length))
+        F_95_index = int(math.ceil(0.95 * lc_length))
 
         F_325_675 = sorted_data[F_675_index] - sorted_data[F_325_index]
         F_5_95 = sorted_data[F_95_index] - sorted_data[F_5_index]
@@ -578,10 +578,10 @@ class FluxPercentileRatioMid50(Base):
         sorted_data = np.sort(magnitude)
         lc_length = len(sorted_data)
 
-        F_25_index = math.ceil(0.25 * lc_length)
-        F_75_index = math.ceil(0.75 * lc_length)
-        F_5_index = math.ceil(0.05 * lc_length)
-        F_95_index = math.ceil(0.95 * lc_length)
+        F_25_index = int(math.ceil(0.25 * lc_length))
+        F_75_index = int(math.ceil(0.75 * lc_length))
+        F_5_index = int(math.ceil(0.05 * lc_length))
+        F_95_index = int(math.ceil(0.95 * lc_length))
 
         F_25_75 = sorted_data[F_75_index] - sorted_data[F_25_index]
         F_5_95 = sorted_data[F_95_index] - sorted_data[F_5_index]
@@ -600,10 +600,10 @@ class FluxPercentileRatioMid65(Base):
         sorted_data = np.sort(magnitude)
         lc_length = len(sorted_data)
 
-        F_175_index = math.ceil(0.175 * lc_length)
-        F_825_index = math.ceil(0.825 * lc_length)
-        F_5_index = math.ceil(0.05 * lc_length)
-        F_95_index = math.ceil(0.95 * lc_length)
+        F_175_index = int(math.ceil(0.175 * lc_length))
+        F_825_index = int(math.ceil(0.825 * lc_length))
+        F_5_index = int(math.ceil(0.05 * lc_length))
+        F_95_index = int(math.ceil(0.95 * lc_length))
 
         F_175_825 = sorted_data[F_825_index] - sorted_data[F_175_index]
         F_5_95 = sorted_data[F_95_index] - sorted_data[F_5_index]
@@ -622,10 +622,10 @@ class FluxPercentileRatioMid80(Base):
         sorted_data = np.sort(magnitude)
         lc_length = len(sorted_data)
 
-        F_10_index = math.ceil(0.10 * lc_length)
-        F_90_index = math.ceil(0.90 * lc_length)
-        F_5_index = math.ceil(0.05 * lc_length)
-        F_95_index = math.ceil(0.95 * lc_length)
+        F_10_index = int(math.ceil(0.10 * lc_length))
+        F_90_index = int(math.ceil(0.90 * lc_length))
+        F_5_index = int(math.ceil(0.05 * lc_length))
+        F_95_index = int(math.ceil(0.95 * lc_length))
 
         F_10_90 = sorted_data[F_90_index] - sorted_data[F_10_index]
         F_5_95 = sorted_data[F_95_index] - sorted_data[F_5_index]
@@ -645,8 +645,8 @@ class PercentDifferenceFluxPercentile(Base):
 
         sorted_data = np.sort(magnitude)
         lc_length = len(sorted_data)
-        F_5_index = math.ceil(0.05 * lc_length)
-        F_95_index = math.ceil(0.95 * lc_length)
+        F_5_index = int(math.ceil(0.05 * lc_length))
+        F_95_index = int(math.ceil(0.95 * lc_length))
         F_5_95 = sorted_data[F_95_index] - sorted_data[F_5_index]
 
         percent_difference = F_5_95 / median_data

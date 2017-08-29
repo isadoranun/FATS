@@ -114,6 +114,9 @@ def fasper(x,y,ofac,hifac, MACC=4):
     return  
   
   nout  = 0.5*ofac*hifac*n  
+  if round(nout) != nout:
+    print("Warning: nout is not an integer and will be rounded down.")
+  nout = int(nout)
   nfreqt = long(ofac*hifac*n*MACC)   #Size the FFT as next power  
   nfreq = 64L             # of 2 above nfreqt.  
   
