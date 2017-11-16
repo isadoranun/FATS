@@ -1,6 +1,10 @@
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
 from codecs import open  # To use a consistent encoding
-from os import path
+import os
+
+
+REPO_DIR = os.path.dirname(os.path.realpath(__file__))
+
 
 # Get the long description from the relevant file
 # with open(path.join(here, 'DESCRIPTION.rst'), encoding='utf-8') as f:
@@ -8,6 +12,13 @@ from os import path
 def readme():
     with open('README.rst') as f:
         return f.read()
+
+
+def get_requirements():
+    """Parses and returns installation requirements."""
+    path = os.path.join(REPO_DIR, "requirements.txt")
+    return [line.strip() for line in open(path).readlines()
+            if not line.startswith("#")]
 
 setup(
     name='FATS',
@@ -70,15 +81,13 @@ setup(
 
     include_package_data=True,
 
-    zip_safe=False
+    zip_safe=False,
 
     # List run-time dependencies here.  These will be installed by pip when your
     # project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/technical.html#install-requires-vs-requirements-files
-    
-    # isa
-    # install_requires=['peppercorn'],
+    install_requires=get_requirements()
 
     # List additional groups of dependencies here (e.g. development dependencies).
     # You can install these using the following syntax, for example:
