@@ -967,7 +967,7 @@ class CAR_sigma(Base):
         # method='nelder-mead',bounds = bnds)
 
         res = minimize(self.CAR_Lik, x0, args=(time, data, error),
-                       method='nelder-mead', bounds=bnds)
+                       method='powell', bounds=bnds)
         # options={'disp': True}
         sigma = res.x[0]
         global tau
