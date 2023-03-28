@@ -12,8 +12,13 @@ from scipy.optimize import curve_fit
 from statsmodels.tsa import stattools
 from scipy.interpolate import interp1d
 
-from Base import Base
-import lomb
+from .Base import Base
+from . import lomb
+
+ERR_MSG_HARM = "error: please run Freq1_harmonics_amplitude_0 first to " \
+               "generate values for all harmonics"
+
+ERR_MSG_RUN = "error: please run {} first to generate values for {}"
 
 
 class Amplitude(Base):
@@ -232,9 +237,8 @@ class StetsonK_AC(SlottedA_length):
 
             return K
 
-        except:
-
-            print "error: please run SlottedA_length first to generate values for StetsonK_AC "
+        except Exception:
+            print(ERR_MSG_RUN.format('SlottedA_length', 'StetsonK_AC'))
 
 
 class StetsonL(Base):
@@ -296,9 +300,9 @@ class Con(Base):
         m = np.mean(magnitude)
         count = 0
 
-        for i in xrange(N - self.consecutiveStar + 1):
+        for i in range(N - self.consecutiveStar + 1):
             flag = 0
-            for j in xrange(self.consecutiveStar):
+            for j in range(self.consecutiveStar):
                 if(magnitude[i + j] > m + 2 * sigma or magnitude[i + j] < m - 2 * sigma):
                     flag = 1
                 else:
@@ -804,7 +808,12 @@ class PeriodLS(Base):
         global prob
         global period
 
-        fx, fy, nout, jmax, prob = lomb.fasper(time, magnitude, self.ofac, 100.)
+        fx, fy, nout, jmax, prob = lomb.fasper(
+            time,
+            magnitude,
+            self.ofac,
+            100.
+        )
         period = fx[jmax]
         T = 1.0 / period
         new_time = np.mod(time, 2 * T) / (2 * T)
@@ -822,8 +831,8 @@ class Period_fit(Base):
 
         try:
             return prob
-        except:
-            print "error: please run PeriodLS first to generate values for Period_fit"
+        except Exception:
+            print(ERR_MSG_RUN.format('PeriodLS', 'Period_fit'))
 
 
 class Psi_CS(Base):
@@ -845,8 +854,8 @@ class Psi_CS(Base):
             R = np.max(s) - np.min(s)
 
             return R
-        except:
-            print "error: please run PeriodLS first to generate values for Psi_CS"
+        except Exception:
+            print(ERR_MSG_RUN.format('PeriodLS', 'Psi_CS'))
 
 
 class Psi_eta(Base):
@@ -881,8 +890,8 @@ class Psi_eta(Base):
                        np.sum(np.power(folded_data[1:] - folded_data[:-1], 2)))
 
             return Psi_eta
-        except:
-            print "error: please run PeriodLS first to generate values for Psi_eta"
+        except Exception:
+            print(ERR_MSG_RUN.format('PeriodLS', 'Psi_eta'))
 
 
 class CAR_sigma(Base):
@@ -952,7 +961,7 @@ class CAR_sigma(Base):
 
             loglik = loglik + loglik_inter
 
-            if(loglik <= cte_neg):
+            if loglik <= cte_neg:
                 print('CAR lik se fue a inf')
                 return None
 
@@ -1000,8 +1009,8 @@ class CAR_tau(Base):
 
         try:
             return tau
-        except:
-            print "error: please run CAR_sigma first to generate values for CAR_tau"
+        except Exception:
+            print(ERR_MSG_RUN.format('CAR_sigma', 'CAR_tau'))
 
 
 class CAR_mean(Base):
@@ -1016,8 +1025,8 @@ class CAR_mean(Base):
 
         try:
             return np.mean(magnitude) / tau
-        except:
-            print "error: please run CAR_sigma first to generate values for CAR_mean"
+        except Exception:
+            print(ERR_MSG_RUN.format('CAR_sigma', 'CAR_mean'))
 
 
 class Freq1_harmonics_amplitude_0(Base):
@@ -1061,7 +1070,11 @@ class Freq1_harmonics_amplitude_0(Base):
             popts = []
 
             for j in range(4):
-                popt, pcov = curve_fit(yfunc((j+1)*fundamental_Freq), time, magnitude)
+                popt, pcov = curve_fit(
+                    yfunc((j+1)*fundamental_Freq),
+                    time,
+                    magnitude
+                )
                 Atemp.append(np.sqrt(popt[0]**2+popt[1]**2))
                 PHtemp.append(np.arctan(popt[1] / popt[0]))
                 popts.append(popt)
@@ -1070,7 +1083,14 @@ class Freq1_harmonics_amplitude_0(Base):
             PH.append(PHtemp)
 
             for j in range(4):
-                magnitude = np.array(magnitude) - model(time, popts[j][0], popts[j][1], popts[j][2], (j+1)*fundamental_Freq)
+                magnitude = np.array(magnitude)
+                magnitude -= model(
+                    time,
+                    popts[j][0],
+                    popts[j][1],
+                    popts[j][2],
+                    (j+1)*fundamental_Freq
+                )
 
         for ph in PH:
             scaledPH.append(np.array(ph) - ph[0])
@@ -1087,8 +1107,8 @@ class Freq1_harmonics_amplitude_1(Base):
 
         try:
             return A[0][1]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq1_harmonics_amplitude_2(Base):
@@ -1100,8 +1120,8 @@ class Freq1_harmonics_amplitude_2(Base):
 
         try:
             return A[0][2]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq1_harmonics_amplitude_3(Base):
@@ -1112,8 +1132,8 @@ class Freq1_harmonics_amplitude_3(Base):
     def fit(self, data):
         try:
             return A[0][3]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq2_harmonics_amplitude_0(Base):
@@ -1124,8 +1144,8 @@ class Freq2_harmonics_amplitude_0(Base):
     def fit(self, data):
         try:
             return A[1][0]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq2_harmonics_amplitude_1(Base):
@@ -1136,8 +1156,8 @@ class Freq2_harmonics_amplitude_1(Base):
     def fit(self, data):
         try:
             return A[1][1]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq2_harmonics_amplitude_2(Base):
@@ -1148,8 +1168,8 @@ class Freq2_harmonics_amplitude_2(Base):
     def fit(self, data):
         try:
             return A[1][2]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq2_harmonics_amplitude_3(Base):
@@ -1160,8 +1180,8 @@ class Freq2_harmonics_amplitude_3(Base):
     def fit(self, data):
         try:
             return A[1][3]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq3_harmonics_amplitude_0(Base):
@@ -1172,8 +1192,8 @@ class Freq3_harmonics_amplitude_0(Base):
     def fit(self, data):
         try:
             return A[2][0]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq3_harmonics_amplitude_1(Base):
@@ -1184,8 +1204,8 @@ class Freq3_harmonics_amplitude_1(Base):
     def fit(self, data):
         try:
             return A[2][1]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq3_harmonics_amplitude_2(Base):
@@ -1196,8 +1216,8 @@ class Freq3_harmonics_amplitude_2(Base):
     def fit(self, data):
         try:
             return A[2][2]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq3_harmonics_amplitude_3(Base):
@@ -1208,8 +1228,8 @@ class Freq3_harmonics_amplitude_3(Base):
     def fit(self, data):
         try:
             return A[2][3]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq1_harmonics_rel_phase_0(Base):
@@ -1220,8 +1240,8 @@ class Freq1_harmonics_rel_phase_0(Base):
     def fit(self, data):
         try:
             return scaledPH[0][0]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq1_harmonics_rel_phase_1(Base):
@@ -1232,8 +1252,8 @@ class Freq1_harmonics_rel_phase_1(Base):
     def fit(self, data):
         try:
             return scaledPH[0][1]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq1_harmonics_rel_phase_2(Base):
@@ -1244,8 +1264,8 @@ class Freq1_harmonics_rel_phase_2(Base):
     def fit(self, data):
         try:
             return scaledPH[0][2]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq1_harmonics_rel_phase_3(Base):
@@ -1256,8 +1276,8 @@ class Freq1_harmonics_rel_phase_3(Base):
     def fit(self, data):
         try:
             return scaledPH[0][3]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq2_harmonics_rel_phase_0(Base):
@@ -1269,8 +1289,8 @@ class Freq2_harmonics_rel_phase_0(Base):
     def fit(self, data):
         try:
             return scaledPH[1][0]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq2_harmonics_rel_phase_1(Base):
@@ -1281,8 +1301,8 @@ class Freq2_harmonics_rel_phase_1(Base):
     def fit(self, data):
         try:
             return scaledPH[1][1]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq2_harmonics_rel_phase_2(Base):
@@ -1293,8 +1313,8 @@ class Freq2_harmonics_rel_phase_2(Base):
     def fit(self, data):
         try:
             return scaledPH[1][2]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq2_harmonics_rel_phase_3(Base):
@@ -1305,8 +1325,8 @@ class Freq2_harmonics_rel_phase_3(Base):
     def fit(self, data):
         try:
             return scaledPH[1][3]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq3_harmonics_rel_phase_0(Base):
@@ -1317,8 +1337,8 @@ class Freq3_harmonics_rel_phase_0(Base):
     def fit(self, data):
         try:
             return scaledPH[2][0]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq3_harmonics_rel_phase_1(Base):
@@ -1329,8 +1349,8 @@ class Freq3_harmonics_rel_phase_1(Base):
     def fit(self, data):
         try:
             return scaledPH[2][1]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq3_harmonics_rel_phase_2(Base):
@@ -1341,8 +1361,8 @@ class Freq3_harmonics_rel_phase_2(Base):
     def fit(self, data):
         try:
             return scaledPH[2][2]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Freq3_harmonics_rel_phase_3(Base):
@@ -1353,8 +1373,8 @@ class Freq3_harmonics_rel_phase_3(Base):
     def fit(self, data):
         try:
             return scaledPH[2][3]
-        except:
-            print "error: please run Freq1_harmonics_amplitude_0 first to generate values for all harmonics"
+        except Exception:
+            print(ERR_MSG_HARM)
 
 
 class Gskew(Base):
@@ -1420,8 +1440,12 @@ class StructureFunction_index_31(Base):
     def fit(self, data):
         try:
             return m_31
-        except:
-            print "error: please run StructureFunction_index_21 first to generate values for all Structure Function"
+        except Exception:
+            print(
+                ERR_MSG_RUN.format(
+                    'StructureFunction_index_21', 'Structure Function'
+                )
+            )
 
 
 class StructureFunction_index_32(Base):
@@ -1432,5 +1456,9 @@ class StructureFunction_index_32(Base):
     def fit(self, data):
         try:
             return m_32
-        except:
-            print "error: please run StructureFunction_index_21 first to generate values for all Structure Function"
+        except Exception:
+            print(
+                ERR_MSG_RUN.format(
+                    'StructureFunction_index_21', 'Structure Function'
+                )
+            )
