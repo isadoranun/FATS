@@ -1,13 +1,12 @@
-
-#from Feature import FeatureSpace
+# from Feature import FeatureSpace
 import numpy as np
+
 
 class ReadLC_MACHO:
 
 
-    def __init__(self,lc):
-
-        self.content1=lc
+    def __init__(self, lc):
+        self.content1 = lc
 
     def ReadLC(self):
 
@@ -15,12 +14,11 @@ class ReadLC_MACHO:
         mjd = []
         error = []
         # Opening the blue band
-        #fid = open(self.id,'r')
+        # fid = open(self.id,'r')
 
         self.content1 = self.content1[3:]
 
-
-        for i in xrange(len(self.content1)):
+        for i in range(len(self.content1)):
             if not self.content1[i]:
                 break
             else:
@@ -32,5 +30,3 @@ class ReadLC_MACHO:
         # Opening the red band
 
         return [data, mjd, error]
-
-    
