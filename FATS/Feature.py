@@ -35,10 +35,10 @@ class FeatureSpace:
     data = np.random.randint(0,10000, 100000000)
     # automean is the featurename and [0,0] is the parameter for the feature
     a = FeatureSpace(category='all', automean=[0,0])
-    print a.featureList
+    print(a.featureList)
     a=a.calculateFeature(data)
-    print a.result(method='array')
-    print a.result(method='dict')
+    print(a.result(method='array'))
+    print(a.result(method='dict'))
 
     """
     def __init__(self, Data=None, featureList=None, excludeList=[], **kwargs):
@@ -93,7 +93,7 @@ class FeatureSpace:
                                         self.featureOrder.append((inspect.getsourcelines(obj)[-1:])[0])
                                         self.featureList.append(name)
                                     else:
-                                        print "Warning: the feature", name, "could not be calculated because", obj().Data, "are needed."
+                                        print("Warning: the feature", name, "could not be calculated because", obj().Data, "are needed.")
                 else:
 
                     for feature in featureList:
@@ -103,7 +103,7 @@ class FeatureSpace:
                                     if set(obj().Data).issubset(self.Data):
                                         self.featureList.append(name)
                                     else:
-                                        print "Warning: the feature", name, "could not be calculated because", obj().Data, "are needed."
+                                        print("Warning: the feature", name, "could not be calculated because", obj().Data, "are needed.")
 
             if self.featureOrder != []:
                 self.sort = True
@@ -121,19 +121,19 @@ class FeatureSpace:
                 try:
                     a = getattr(m, item)(kwargs[item])
                 except:
-                    print "error in feature " + item
+                    print("error in feature " + item)
                     sys.exit(1)
             else:
                 try:
                     a = getattr(m, item)()
                 except:
-                    print " could not find feature " + item
+                    print(" could not find feature " + item)
                     # discuss -- should we exit?
                     sys.exit(1)
             try:
                 self.featureFunc.append(a.fit)
             except:
-                print "could not initilize " + item
+                print("could not initilize " + item)
 
     def calculateFeature(self, data):
         self._X = np.asarray(data)
